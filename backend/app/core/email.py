@@ -1,8 +1,13 @@
 import logging
-from mailjet_rest import Client
+import time
+from typing import Any, Dict
+
+import httpx
+
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
+MAILJET_API_URL = "https://api.mailjet.com/v3.1/send"
 
 
 def send_otp_email(to_email: str, otp_code: str, recipient_name: str) -> bool:
@@ -18,11 +23,6 @@ def send_otp_email(to_email: str, otp_code: str, recipient_name: str) -> bool:
     if not settings.MAILJET_FROM_EMAIL:
         logger.error("MAILJET_FROM_EMAIL not configured in .env")
         return False
-
-    mailjet = Client(
-        auth=(settings.MAILJET_API_KEY, settings.MAILJET_SECRET_KEY),
-        version="v3.1"
-    )
 
     # Split OTP into individual digits for styled display
     otp_digits = " ".join(list(otp_code))
